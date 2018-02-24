@@ -1,15 +1,24 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/h00s/url-shortener-backend/handler"
+)
 
 func main() {
-	r := gin.Default()
+	h, err := handler.NewHandler()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	r.GET("/test", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"result": "ok",
-		})
-	})
+	r := gin.Default()
+	v1 := r.Group("/v1")
+	{
+		v1.GET("/link/:name", h.GetLink)
+		v1.POST("/link", h.PostLink)
+	}
 
 	r.Run()
 }
