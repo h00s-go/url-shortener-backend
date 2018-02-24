@@ -4,11 +4,11 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/h00s/url-shortener-backend/handler"
+	"github.com/h00s/url-shortener-backend/controller"
 )
 
 func main() {
-	h, err := handler.NewHandler()
+	c, err := controller.NewController()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -16,8 +16,8 @@ func main() {
 	r := gin.Default()
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/link/:name", h.GetLink)
-		v1.POST("/link", h.PostLink)
+		v1.GET("/link/:name", c.GetLink)
+		v1.POST("/link", c.PostLink)
 	}
 
 	r.Run()

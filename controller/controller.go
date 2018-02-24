@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 	_ "github.com/lib/pq" //for a postgres
 )
 
-// Handler handles DB connections
-type Handler struct {
+// Controller handles DB connections
+type Controller struct {
 	db *sql.DB
 }
 
@@ -22,8 +22,8 @@ type configuration struct {
 	DBName     string
 }
 
-// NewHandler create new DB handler
-func NewHandler() (*Handler, error) {
+// NewController create new DB Controller
+func NewController() (*Controller, error) {
 	c, err := loadConfiguration("configuration.json")
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +35,7 @@ func NewHandler() (*Handler, error) {
 		log.Fatal(err)
 		return nil, err
 	}
-	h := &Handler{db: db}
+	h := &Controller{db: db}
 	return h, nil
 }
 
