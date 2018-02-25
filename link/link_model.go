@@ -1,4 +1,4 @@
-package model
+package link
 
 import (
 	"strings"
@@ -11,8 +11,8 @@ type Link struct {
 	URL string `json:"url"`
 }
 
-// GetLinkNameFromID gets name from numerical ID
-func GetLinkNameFromID(id int) string {
+// GetNameFromID gets name from numerical ID
+func GetNameFromID(id int) string {
 	name := ""
 	for id > 0 {
 		name = string(validChars[id%50]) + name
@@ -21,8 +21,8 @@ func GetLinkNameFromID(id int) string {
 	return name
 }
 
-// GetLinkIDFromName gets ID from name
-func GetLinkIDFromName(name string) int {
+// GetIDFromName gets ID from name
+func GetIDFromName(name string) int {
 	id := 0
 	for i := 0; i < len(name); i++ {
 		id = 50*id + (strings.Index(validChars, string(name[i])))

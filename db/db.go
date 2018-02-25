@@ -1,4 +1,4 @@
-package controller
+package db
 
 import (
 	"database/sql"
@@ -10,9 +10,9 @@ import (
 	_ "github.com/lib/pq" //for a postgres
 )
 
-// Controller handles DB connections
-type Controller struct {
-	db *sql.DB
+// Database handles DB connections
+type Database struct {
+	conn *sql.DB
 }
 
 type configuration struct {
@@ -22,21 +22,20 @@ type configuration struct {
 	DBName     string
 }
 
-// NewController create new DB Controller
-func NewController() (*Controller, error) {
+// NewDatabase create new DB Database
+func NewDatabase() (*Database, error) {
 	c, err := loadConfiguration("configuration.json")
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
 	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s", c.DBHost, c.DBUser, c.DBPassword, c.DBName)
-	db, err := sql.Open("postgres", connStr)
+	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
-	h := &Controller{db: db}
-	return h, nil
+	return &Database{conn: conn}, nil
 }
 
 func loadConfiguration(path string) (configuration, error) {
