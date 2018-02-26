@@ -14,7 +14,7 @@ type Link struct {
 }
 
 // GetNameFromID gets name from numerical ID
-func GetNameFromID(id int) string {
+func getNameFromID(id int) string {
 	name := ""
 	for id > 0 {
 		name = string(validChars[id%len(validChars)]) + name
@@ -24,7 +24,7 @@ func GetNameFromID(id int) string {
 }
 
 // GetIDFromName gets ID from name
-func GetIDFromName(name string) int {
+func getIDFromName(name string) int {
 	id := 0
 	for i := 0; i < len(name); i++ {
 		id = len(validChars)*id + (strings.Index(validChars, string(name[i])))
