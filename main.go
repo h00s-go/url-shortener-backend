@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	db, err := db.NewDatabase()
+	db, err := db.NewDatabase("configuration.json")
 	if err != nil {
 		log.Fatal(err)
 	}

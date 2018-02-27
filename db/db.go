@@ -23,8 +23,8 @@ type configuration struct {
 }
 
 // NewDatabase create new DB Database
-func NewDatabase() (*Database, error) {
-	c, err := loadConfiguration("configuration.json")
+func NewDatabase(configPath string) (*Database, error) {
+	c, err := loadConfiguration(configPath)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
