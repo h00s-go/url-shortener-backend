@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGetLinkNameFromID(t *testing.T) {
+func TestLinkNames(t *testing.T) {
 	name := getNameFromID(1)
 	if name != "B" {
 		t.Error("Expected B, got ", name)

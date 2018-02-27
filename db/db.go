@@ -27,13 +27,11 @@ func NewDatabase(configPath string) (*Database, error) {
 	c, err := loadConfiguration(configPath)
 	if err != nil {
 		log.Fatal(err)
-		return nil, err
 	}
 	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s", c.DBHost, c.DBUser, c.DBPassword, c.DBName)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
-		return nil, err
 	}
 	return &Database{conn: conn}, nil
 }
