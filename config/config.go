@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 )
 
-// Config struct have all fields from configuration JSON file
-type Config struct {
+// Configuration struct have all fields from configuration JSON file
+type Configuration struct {
 	Database struct {
 		Host     string `json:"host"`
 		Port     string `json:"port"`
@@ -16,9 +16,9 @@ type Config struct {
 	} `json:"database"`
 }
 
-// LoadConfig loads configuration from path
-func LoadConfig(path string) (Config, error) {
-	var c Config
+// LoadConfiguration loads configuration from path
+func LoadConfiguration(path string) (Configuration, error) {
+	var c Configuration
 	configJSON, err := ioutil.ReadFile(path)
 	if err != nil {
 		return c, err

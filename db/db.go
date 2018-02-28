@@ -15,11 +15,7 @@ type Database struct {
 }
 
 // NewDatabase create new DB Database
-func NewDatabase(configPath string) (*Database, error) {
-	c, err := config.LoadConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewDatabase(c config.Configuration) (*Database, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {

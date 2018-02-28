@@ -4,12 +4,18 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/h00s/url-shortener-backend/config"
 	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/link"
 )
 
 func main() {
-	db, err := db.NewDatabase("configuration.json")
+	config, err := config.LoadConfiguration("configuration.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db, err := db.NewDatabase(config)
 	if err != nil {
 		log.Fatal(err)
 	}
