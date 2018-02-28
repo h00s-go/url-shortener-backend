@@ -1,6 +1,10 @@
 {
-  "dbhost": "127.0.0.1",
-  "dbuser": "user",
-  "dbpassword": "secret",
-  "dbname": "url_shortener"
+  "database":
+  {
+    "host": "127.0.0.1",
+    "port": "5432",
+    "user": "user",
+    "password": "secret",
+    "name": "url_shortener"
+  }
 }

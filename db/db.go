@@ -2,11 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 
+	"github.com/h00s/url-shortener-backend/config"
 	_ "github.com/lib/pq" //for a postgres
 )
 
@@ -15,33 +14,22 @@ type Database struct {
 	conn *sql.DB
 }
 
-type configuration struct {
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-}
-
 // NewDatabase create new DB Database
 func NewDatabase(configPath string) (*Database, error) {
-	c, err := loadConfiguration(configPath)
+	c, err := config.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s", c.DBHost, c.DBUser, c.DBPassword, c.DBName)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Database{conn: conn}, nil
-}
 
-func loadConfiguration(path string) (configuration, error) {
-	var config configuration
-	configJSON, err := ioutil.ReadFile(path)
+	err = conn.Ping()
 	if err != nil {
-		return config, err
+		log.Fatal(err)
 	}
-	err = json.Unmarshal(configJSON, &config)
-	return config, err
+
+	return &Database{conn: conn}, nil
 }
