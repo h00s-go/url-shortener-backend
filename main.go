@@ -20,6 +20,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = db.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	lc := link.NewController(db)
 
 	r := gin.Default()

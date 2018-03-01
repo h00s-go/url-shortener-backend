@@ -12,8 +12,13 @@ func TestDB(t *testing.T) {
 		t.Error("Unable to load configuration")
 	}
 
-	_, err = NewDatabase(c)
+	db, err := NewDatabase(c)
 	if err != nil {
 		t.Error("Unable to connect to DB")
+	}
+
+	err = db.Init()
+	if err != nil {
+		t.Error("Unable to initialize DB")
 	}
 }

@@ -29,3 +29,15 @@ func NewDatabase(c config.Configuration) (*Database, error) {
 
 	return &Database{conn: conn}, nil
 }
+
+// Init initializes database with necessary tables
+func (db *Database) Init() error {
+	sqlCreateSchema := `
+	CREATE TABLE IF NOT EXISTS schema (
+		version integer
+	);
+	`
+
+	_, err := db.conn.Exec(sqlCreateSchema)
+	return err
+}
