@@ -37,7 +37,23 @@ func (db *Database) Init() error {
 		version integer
 	);
 	`
-
 	_, err := db.conn.Exec(sqlCreateSchema)
+	if err != nil {
+		return err
+	}
+
+	err = db.conn.QueryRow("SELECT * FROM schema;").Scan()
+	if err == sql.ErrNoRows {
+		db.conn.Exec("INSERT INTO schema (version) VALUES (1);")
+	}
+
+	sqlCreateLinks := `
+	CREATE TABLE IF NOT EXISTS links (
+		id SERIAL PRIMARY KEY,
+		name TEXT,
+		url TEXT
+	);
+	`
+	_, err = db.conn.Exec(sqlCreateLinks)
 	return err
 }

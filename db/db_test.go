@@ -14,11 +14,13 @@ func TestDB(t *testing.T) {
 
 	db, err := NewDatabase(c)
 	if err != nil {
-		t.Error("Unable to connect to DB")
+		t.Error("Unable to connect to DB", err)
 	}
+
+	db.conn.Query("DROP TABLE schema; DROP TABLE links;")
 
 	err = db.Init()
 	if err != nil {
-		t.Error("Unable to initialize DB")
+		t.Error("Unable to initialize DB", err)
 	}
 }
