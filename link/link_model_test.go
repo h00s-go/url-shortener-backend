@@ -26,3 +26,34 @@ func TestLinkNames(t *testing.T) {
 		t.Error("Expected 2500, got ", id)
 	}
 }
+
+func TestURLCheck(t *testing.T) {
+	url := "http://www.foo.com"
+	if !checkURL(url) {
+		t.Error(url, "is not valid")
+	}
+	url = "http://www.foo.kom"
+	if checkURL(url) {
+		t.Error(url, "is valid")
+	}
+	url = "ftp://www.foo.com"
+	if !checkURL(url) {
+		t.Error(url, "is not valid")
+	}
+	url = "htp://www.foo.com"
+	if checkURL(url) {
+		t.Error(url, "is valid")
+	}
+	url = "foo/bar"
+	if checkURL(url) {
+		t.Error(url, "is valid")
+	}
+	url = "foo"
+	if checkURL(url) {
+		t.Error(url, "is valid")
+	}
+	url = "www.foo.com"
+	if checkURL(url) {
+		t.Error(url, "is valid")
+	}
+}
