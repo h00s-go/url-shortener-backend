@@ -14,8 +14,8 @@ type Database struct {
 	conn *sql.DB
 }
 
-// NewDatabase create new DB Database
-func NewDatabase(c config.Configuration) (*Database, error) {
+// Connect create new Database struct and connects to DB
+func Connect(c config.Configuration) (*Database, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -30,8 +30,8 @@ func NewDatabase(c config.Configuration) (*Database, error) {
 	return &Database{conn: conn}, nil
 }
 
-// Init initializes database with necessary tables
-func (db *Database) Init() error {
+// Migrate migrates database to valid state
+func (db *Database) Migrate() error {
 	sqlCreateSchema := `
 	CREATE TABLE IF NOT EXISTS schema (
 		version integer

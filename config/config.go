@@ -16,8 +16,8 @@ type Configuration struct {
 	} `json:"database"`
 }
 
-// LoadConfiguration loads configuration from path
-func LoadConfiguration(path string) (Configuration, error) {
+// Load loads configuration from path
+func Load(path string) (Configuration, error) {
 	var c Configuration
 	configJSON, err := ioutil.ReadFile(path)
 	if err != nil {

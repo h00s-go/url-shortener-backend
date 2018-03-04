@@ -7,20 +7,20 @@ import (
 )
 
 func TestDB(t *testing.T) {
-	c, err := config.LoadConfiguration("../configuration_test.json")
+	c, err := config.Load("../configuration_test.json")
 	if err != nil {
 		t.Error("Unable to load configuration")
 	}
 
-	db, err := NewDatabase(c)
+	db, err := Connect(c)
 	if err != nil {
 		t.Error("Unable to connect to DB", err)
 	}
 
 	db.conn.Query("DROP TABLE schema; DROP TABLE links;")
 
-	err = db.Init()
+	err = db.Migrate()
 	if err != nil {
-		t.Error("Unable to initialize DB", err)
+		t.Error("Unable to migrate DB", err)
 	}
 }

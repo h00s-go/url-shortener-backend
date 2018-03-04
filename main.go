@@ -10,17 +10,17 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfiguration("configuration.json")
+	config, err := config.Load("configuration.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db, err := db.NewDatabase(config)
+	db, err := db.Connect(config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = db.Init()
+	err = db.Migrate()
 	if err != nil {
 		log.Fatal(err)
 	}
