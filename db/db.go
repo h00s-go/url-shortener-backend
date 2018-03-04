@@ -49,9 +49,11 @@ func (db *Database) Migrate() error {
 
 	sqlCreateLinks := `
 	CREATE TABLE IF NOT EXISTS links (
-		id SERIAL PRIMARY KEY,
-		name TEXT,
-		url TEXT
+		id serial PRIMARY KEY,
+		name text UNIQUE NOT NULL,
+		url text UNIQUE NOT NULL,
+		client_address inet NOT NULL,
+		created_at timestamp NOT NULL
 	);
 	`
 	_, err = db.conn.Exec(sqlCreateLinks)
