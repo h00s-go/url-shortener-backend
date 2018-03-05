@@ -52,6 +52,7 @@ func (db *Database) Migrate() error {
 		id serial PRIMARY KEY,
 		name text UNIQUE NOT NULL,
 		url text UNIQUE NOT NULL,
+		view_count integer DEFAULT 0,
 		client_address inet NOT NULL,
 		created_at timestamp NOT NULL
 	);
