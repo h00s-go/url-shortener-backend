@@ -29,31 +29,31 @@ func TestLinkNames(t *testing.T) {
 
 func TestURLCheck(t *testing.T) {
 	url := "http://www.foo.com"
-	if !checkURL(url) {
+	if checkURL(url) != nil {
 		t.Error(url, "is not valid")
 	}
 	url = "http://www.foo.kom"
-	if checkURL(url) {
+	if checkURL(url) == nil {
 		t.Error(url, "is valid")
 	}
 	url = "ftp://www.foo.com"
-	if !checkURL(url) {
+	if checkURL(url) != nil {
 		t.Error(url, "is not valid")
 	}
 	url = "htp://www.foo.com"
-	if checkURL(url) {
+	if checkURL(url) == nil {
 		t.Error(url, "is valid")
 	}
 	url = "foo/bar"
-	if checkURL(url) {
+	if checkURL(url) == nil {
 		t.Error(url, "is valid")
 	}
 	url = "foo"
-	if checkURL(url) {
+	if checkURL(url) == nil {
 		t.Error(url, "is valid")
 	}
 	url = "www.foo.com"
-	if checkURL(url) {
+	if checkURL(url) == nil {
 		t.Error(url, "is valid")
 	}
 }

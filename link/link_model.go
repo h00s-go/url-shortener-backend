@@ -1,6 +1,7 @@
 package link
 
 import (
+	"errors"
 	"net"
 	"net/url"
 	"strings"
@@ -36,16 +37,20 @@ func getIDFromName(name string) int {
 
 // checkURL verifies if it's valid url
 // also doing DNS lookup if domain exists
-func checkURL(urlToCheck string) bool {
+func checkURL(urlToCheck string) error {
 	u, err := url.ParseRequestURI(urlToCheck)
 	if err != nil {
-		return false
+		return errors.New("Invalid URL")
 	}
-	if u.IsAbs() && (u.Scheme == "http" || u.Scheme == "https" || u.Scheme == "ftp") {
-		_, err = net.LookupHost(u.Host)
-		if err == nil {
-			return true
-		}
+	if !u.IsAbs() {
+		return errors.New("URL is not absolute")
 	}
-	return false
+	if u.Scheme != "http" && u.Scheme != "https" && u.Scheme != "ftp" {
+		return errors.New("URL does not have http(s) prefix")
+	}
+	_, err = net.LookupHost(u.Host)
+	if err != nil {
+		return errors.New("Domain doesn't exist")
+	}
+	return nil
 }
