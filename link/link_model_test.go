@@ -28,32 +28,20 @@ func TestLinkNames(t *testing.T) {
 }
 
 func TestURLCheck(t *testing.T) {
-	url := "http://www.foo.com"
-	if checkURL(url) != nil {
-		t.Error(url, "is not valid")
+	validURLs := []string{"http://www.foo.com", "ftp://www.foo.com"}
+	invalidURLs := []string{"http://www.foo.kom", "htp://www.foo.com", "foo/bar", "foo", "www.foo.com"}
+
+	for _, validURL := range validURLs {
+		err := checkURL(validURL)
+		if err != nil {
+			t.Error(validURL, "is not valid")
+		}
 	}
-	url = "http://www.foo.kom"
-	if checkURL(url) == nil {
-		t.Error(url, "is valid")
-	}
-	url = "ftp://www.foo.com"
-	if checkURL(url) != nil {
-		t.Error(url, "is not valid")
-	}
-	url = "htp://www.foo.com"
-	if checkURL(url) == nil {
-		t.Error(url, "is valid")
-	}
-	url = "foo/bar"
-	if checkURL(url) == nil {
-		t.Error(url, "is valid")
-	}
-	url = "foo"
-	if checkURL(url) == nil {
-		t.Error(url, "is valid")
-	}
-	url = "www.foo.com"
-	if checkURL(url) == nil {
-		t.Error(url, "is valid")
+
+	for _, invalidURL := range invalidURLs {
+		err := checkURL(invalidURL)
+		if err == nil {
+			t.Error(invalidURL, "is valid")
+		}
 	}
 }
