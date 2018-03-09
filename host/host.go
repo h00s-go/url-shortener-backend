@@ -8,16 +8,6 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-// IsBlacklisted checks if host is blacklisted in surbl
-func IsBlacklisted(host string) error {
-	domain, _ := publicsuffix.EffectiveTLDPlusOne(host)
-	_, err := net.LookupHost(domain + ".multi.surbl.org")
-	if err == nil {
-		return errors.New("Host found in surbl.org")
-	}
-	return nil
-}
-
 // IsValid verifies if it's valid url
 // also doing DNS lookup if domain exists
 func IsValid(uri string) error {
@@ -39,10 +29,37 @@ func IsValid(uri string) error {
 		return errors.New("Domain doesn't exist")
 	}
 
-	err = IsBlacklisted(u.Host)
+	err = isBlacklisted(u.Host)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// IsBlacklisted checks if host is blacklisted in surbl
+// Returns nil if host is not blacklisted
+func isBlacklisted(host string) error {
+	domain, _ := publicsuffix.EffectiveTLDPlusOne(host)
+
+	if isRedirector(domain) {
+		return errors.New("Redirectors are not allowed")
+	}
+
+	_, err := net.LookupHost(domain + ".multi.surbl.org")
+	if err == nil {
+		return errors.New("Host found in surbl.org")
+	}
+	return nil
+}
+
+func isRedirector(domain string) bool {
+	switch domain {
+	case
+		"bit.ly",
+		"goo.gl",
+		"bit.do":
+		return true
+	}
+	return false
 }
