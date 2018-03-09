@@ -2,25 +2,18 @@ package host
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"net/url"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 // IsBlacklisted checks if host is blacklisted in surbl
 func IsBlacklisted(host string) error {
-	addresses, err := net.LookupIP(host)
-	if err != nil {
-		return err
-	}
-	for _, a := range addresses {
-		if a.To4() != nil {
-			checkHost := fmt.Sprintf("%d.%d.%d.%d.zen.spamhaus.org", a[15], a[14], a[13], a[12])
-			_, err = net.LookupHost(checkHost)
-			if err == nil {
-				return errors.New("Host found in zen.spamhaus.org")
-			}
-		}
+	domain, _ := publicsuffix.EffectiveTLDPlusOne(host)
+	_, err := net.LookupHost(domain + ".multi.surbl.org")
+	if err == nil {
+		return errors.New("Host found in surbl.org")
 	}
 	return nil
 }
