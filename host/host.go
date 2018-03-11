@@ -56,13 +56,17 @@ func isBlacklisted(host string) error {
 func isRedirector(domain string) bool {
 	switch domain {
 	case
+		"adf.ly",
 		"bc.vc",
 		"bit.do",
 		"bit.ly",
 		"budurl.com",
+		"buff.ly",
 		"clicky.me",
 		"goo.gl",
 		"is.gd",
+		"mcaf.ee",
+		"ow.ly",
 		"s2r.co",
 		"soo.gd",
 		"short.to",
