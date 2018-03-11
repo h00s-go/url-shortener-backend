@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"net/url"
+	"strings"
 
 	"golang.org/x/net/publicsuffix"
 )
@@ -24,12 +25,14 @@ func IsValid(uri string) error {
 		return errors.New("URL does not have http(s) prefix")
 	}
 
-	_, err = net.LookupHost(u.Host)
+	host := strings.ToLower(u.Host)
+
+	_, err = net.LookupHost(host)
 	if err != nil {
-		return errors.New("Domain doesn't exist")
+		return errors.New("Host doesn't exist")
 	}
 
-	err = isBlacklisted(u.Host)
+	err = isBlacklisted(host)
 	if err != nil {
 		return err
 	}

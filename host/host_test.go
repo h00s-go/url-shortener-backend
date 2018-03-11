@@ -17,7 +17,8 @@ func TestURLCheck(t *testing.T) {
 		"www.foo.com",
 		"http://vcruut.info",
 		"http://puresafesupply.ru",
-		"http://goo.gl/pero",
+		"http://goo.gl/test",
+		"http://Goo.gl/test",
 	}
 
 	for _, validURL := range validURLs {
