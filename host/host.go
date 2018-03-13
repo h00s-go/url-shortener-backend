@@ -42,8 +42,13 @@ func IsValid(uri string) error {
 
 // IsBlacklisted checks if host is blacklisted in surbl
 // Returns nil if host is not blacklisted
+// isBlacklisted also checks against whitelisting and url shorteners/redirectors
 func isBlacklisted(host string) error {
 	domain, _ := publicsuffix.EffectiveTLDPlusOne(host)
+
+	if isWhitelisted(domain) {
+		return nil
+	}
 
 	if isRedirector(domain) {
 		return errors.New("Redirectors are not allowed")
@@ -56,6 +61,18 @@ func isBlacklisted(host string) error {
 	return nil
 }
 
+// isWhitelisted should only be called from isBlacklisted
+func isWhitelisted(domain string) bool {
+	switch domain {
+	case
+		"google.com",
+		"tinyurl.com":
+		return true
+	}
+	return false
+}
+
+// isRedirector should only be called from isBlacklisted
 func isRedirector(domain string) bool {
 	switch domain {
 	case
