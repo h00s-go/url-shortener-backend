@@ -11,6 +11,7 @@ import (
 
 // IsValid verifies if it's valid url
 // also doing DNS lookup if domain exists
+// if domain exists, checking for whitelisting and blacklisting
 func IsValid(uri string) error {
 	u, err := url.ParseRequestURI(uri)
 	if err != nil {
@@ -32,47 +33,34 @@ func IsValid(uri string) error {
 		return errors.New("Host doesn't exist")
 	}
 
-	err = isBlacklisted(host)
+	domain, err := publicsuffix.EffectiveTLDPlusOne(host)
 	if err != nil {
-		return err
+		return errors.New("Error while getting domain")
 	}
-
-	return nil
-}
-
-// IsBlacklisted checks if host is blacklisted in surbl
-// Returns nil if host is not blacklisted
-// isBlacklisted also checks against whitelisting and url shorteners/redirectors
-func isBlacklisted(host string) error {
-	domain, _ := publicsuffix.EffectiveTLDPlusOne(host)
 
 	if isWhitelisted(domain) {
 		return nil
 	}
-
 	if isRedirector(domain) {
-		return errors.New("Redirectors are not allowed")
+		return errors.New("Domain found in redirectors list")
+	}
+	if isBlacklisted(domain) {
+		return errors.New("Domain is blacklisted")
 	}
 
-	_, err := net.LookupHost(domain + ".multi.surbl.org")
-	if err == nil {
-		return errors.New("Host found in surbl.org")
-	}
 	return nil
 }
 
-// isWhitelisted should only be called from isBlacklisted
 func isWhitelisted(domain string) bool {
 	switch domain {
 	case
 		"google.com",
-		"tinyurl.com":
+		"yahoo.com":
 		return true
 	}
 	return false
 }
 
-// isRedirector should only be called from isBlacklisted
 func isRedirector(domain string) bool {
 	switch domain {
 	case
@@ -92,6 +80,15 @@ func isRedirector(domain string) bool {
 		"short.to",
 		"tiny.cc",
 		"tinyurl.com":
+		return true
+	}
+	return false
+}
+
+// IsBlacklisted checks if host is blacklisted in SURBL
+func isBlacklisted(domain string) bool {
+	_, err := net.LookupHost(domain + ".multi.surbl.org")
+	if err == nil {
 		return true
 	}
 	return false
