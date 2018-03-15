@@ -9,6 +9,28 @@ import (
 // It will break getting and inserting new links
 const validChars = "ABCDEFHJKLMNPRSTUVXYZabcdefgijkmnprstuvxyz23456789"
 
+const sqlInsertLink = `
+INSERT INTO links (
+	name, url, view_count, client_address, created_at
+)
+VALUES (
+	$1, $2, $3, $4, $5
+)
+RETURNING id`
+const sqlUpdateLinkName = `
+"UPDATE links SET name = $1 WHERE id = $2"
+`
+const sqlGetLinkByID = `
+SELECT id, name, url, view_count, client_address, created_at
+FROM links
+WHERE id = $1"
+`
+const sqlGetLinkByURL = `
+SELECT id, name, url, view_count, client_address, created_at
+FROM links
+WHERE url = $1"
+`
+
 // Link represent one shortened link
 type Link struct {
 	ID            int    `json:"id"`
@@ -23,32 +45,18 @@ type Link struct {
 func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	l := &Link{}
 
-	sqlInsertLink := `
-	INSERT INTO links (
-		name, url, view_count, client_address, created_at
-	)
-	VALUES (
-		$1, $2, $3, $4, $5
-	)
-	RETURNING id`
 	id := 0
 	err := c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, "127.0.0.1", "NOW()").Scan(&id)
 	if err != nil {
 		return l, errors.New("Error while inserting link")
 	}
 
-	sqlUpdateName := "UPDATE links SET name = $1 WHERE id = $2"
-	_, err = c.db.Conn.Exec(sqlUpdateName, getNameFromID(id), id)
+	_, err = c.db.Conn.Exec(sqlUpdateLinkName, getNameFromID(id), id)
 	if err != nil {
 		return l, errors.New("Error while updating link name")
 	}
 
-	sqlGetLink := `
-	SELECT id, name, url, view_count, client_address, created_at
-	FROM links
-	WHERE id = $1"
-	`
-	err = c.db.Conn.QueryRow(sqlGetLink, id).Scan(&l.ID, &l.Name, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	err = c.db.Conn.QueryRow(sqlGetLinkByID, id).Scan(&l.ID, &l.Name, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
 	if err != nil {
 		return l, errors.New("Error while getting link")
 	}
