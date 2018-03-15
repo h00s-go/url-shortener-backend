@@ -18,17 +18,17 @@ VALUES (
 )
 RETURNING id`
 const sqlUpdateLinkName = `
-"UPDATE links SET name = $1 WHERE id = $2"
+UPDATE links SET name = $1 WHERE id = $2
 `
 const sqlGetLinkByID = `
 SELECT id, name, url, view_count, client_address, created_at
 FROM links
-WHERE id = $1"
+WHERE id = $1
 `
 const sqlGetLinkByURL = `
 SELECT id, name, url, view_count, client_address, created_at
 FROM links
-WHERE url = $1"
+WHERE url = $1
 `
 
 // Link represent one shortened link
@@ -56,7 +56,7 @@ func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 		return l, errors.New("Error while updating link name")
 	}
 
-	err = c.db.Conn.QueryRow(sqlGetLinkByID, id).Scan(&l.ID, &l.Name, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	err = c.db.Conn.QueryRow(sqlGetLinkByID, id).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
 	if err != nil {
 		return l, errors.New("Error while getting link")
 	}
