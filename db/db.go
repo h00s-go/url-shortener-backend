@@ -11,7 +11,7 @@ import (
 
 // Database handles DB connections
 type Database struct {
-	conn *sql.DB
+	Conn *sql.DB
 }
 
 // Connect create new Database struct and connects to DB
@@ -27,7 +27,7 @@ func Connect(c config.Configuration) (*Database, error) {
 		log.Fatal(err)
 	}
 
-	return &Database{conn: conn}, nil
+	return &Database{Conn: conn}, nil
 }
 
 // Migrate migrates database to valid state
@@ -37,14 +37,14 @@ func (db *Database) Migrate() error {
 		version integer
 	);
 	`
-	_, err := db.conn.Exec(sqlCreateSchema)
+	_, err := db.Conn.Exec(sqlCreateSchema)
 	if err != nil {
 		return err
 	}
 
-	err = db.conn.QueryRow("SELECT * FROM schema;").Scan()
+	err = db.Conn.QueryRow("SELECT * FROM schema;").Scan()
 	if err == sql.ErrNoRows {
-		db.conn.Exec("INSERT INTO schema (version) VALUES (1);")
+		db.Conn.Exec("INSERT INTO schema (version) VALUES (1);")
 	}
 
 	sqlCreateLinks := `
@@ -57,6 +57,6 @@ func (db *Database) Migrate() error {
 		created_at timestamp NOT NULL
 	);
 	`
-	_, err = db.conn.Exec(sqlCreateLinks)
+	_, err = db.Conn.Exec(sqlCreateLinks)
 	return err
 }
