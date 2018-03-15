@@ -2,6 +2,10 @@ package link
 
 import (
 	"testing"
+
+	"github.com/h00s/url-shortener-backend/config"
+	"github.com/h00s/url-shortener-backend/db"
+	"github.com/h00s/url-shortener-backend/link"
 )
 
 func TestLinkNames(t *testing.T) {
@@ -25,4 +29,11 @@ func TestLinkNames(t *testing.T) {
 	if id != 2500 {
 		t.Error("Expected 2500, got ", id)
 	}
+}
+
+func TestLinkInserting(t *testing.T) {
+	config, _ := config.Load("../configuration.json")
+	db, _ := db.Connect(config)
+	lc := link.NewController(db)
+	link.InsertLink(lc, "http://www.google.com/test1", "127.0.0.1")
 }

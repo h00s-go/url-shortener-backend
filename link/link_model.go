@@ -1,6 +1,7 @@
 package link
 
 import (
+	"errors"
 	"strings"
 )
 
@@ -19,9 +20,41 @@ type Link struct {
 }
 
 // InsertLink in db. If inserted, return Link struct
-//func InsertLink(c *Controller, url string) (Link, error) {
-//	return Link{}, nil
-//}
+func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
+	l := &Link{}
+
+	sqlInsertLink := `
+	INSERT INTO links (
+		name, url, view_count, client_address, created_at
+	)
+	VALUES (
+		$1, $2, $3, $4, $5
+	)
+	RETURNING id`
+	id := 0
+	err := c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, "127.0.0.1", "NOW()").Scan(&id)
+	if err != nil {
+		return l, errors.New("Error while inserting link")
+	}
+
+	sqlUpdateName := "UPDATE links SET name = $1 WHERE id = $2"
+	_, err = c.db.Conn.Exec(sqlUpdateName, getNameFromID(id), id)
+	if err != nil {
+		return l, errors.New("Error while updating link name")
+	}
+
+	sqlGetLink := `
+	SELECT id, name, url, view_count, client_address, created_at
+	FROM links
+	WHERE id = $1"
+	`
+	err = c.db.Conn.QueryRow(sqlGetLink, id).Scan(&l.ID, &l.Name, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	if err != nil {
+		return l, errors.New("Error while getting link")
+	}
+
+	return l, nil
+}
 
 // getNameFromID gets name from numerical ID
 func getNameFromID(id int) string {
