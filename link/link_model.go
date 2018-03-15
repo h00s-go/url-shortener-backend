@@ -10,8 +10,18 @@ const validChars = "ABCDEFHJKLMNPRSTUVXYZabcdefgijkmnprstuvxyz23456789"
 
 // Link represent one shortened link
 type Link struct {
-	URL string `json:"url"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	URL           string `json:"url"`
+	ViewCount     int    `json:"viewCount"`
+	ClientAddress string `json:"clientAddress"`
+	CreatedAt     string `json:"createdAt"`
 }
+
+// InsertLink in db. If inserted, return Link struct
+//func InsertLink(c *Controller, url string) (Link, error) {
+//	return Link{}, nil
+//}
 
 // getNameFromID gets name from numerical ID
 func getNameFromID(id int) string {
