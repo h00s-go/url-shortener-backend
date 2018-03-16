@@ -16,10 +16,17 @@ func NewController(db *db.Database) *Controller {
 }
 
 // GetLink get link with specific name
-func (*Controller) GetLink(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"result": "ok",
-	})
+func (lc *Controller) GetLink(c *gin.Context) {
+	name := c.Param("name")
+	l, err := GetLink(lc, name)
+
+	if err == nil {
+		c.Redirect(302, l.URL)
+	} else {
+		c.JSON(404, gin.H{
+			"message": "link not found",
+		})
+	}
 }
 
 // PostLink adds new link
