@@ -35,7 +35,7 @@ func TestLinkInserting(t *testing.T) {
 	config, _ := config.Load("../configuration.json")
 	db, _ := db.Connect(config)
 	lc := link.NewController(db)
-	_, err := link.InsertLink(lc, "http://www.google.com/test4", "127.0.0.1")
+	_, err := link.InsertLink(lc, "http://www.google.com/test", "127.0.0.1")
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,6 +1,7 @@
 package link
 
 import (
+	"database/sql"
 	"errors"
 	"strings"
 )
@@ -16,7 +17,8 @@ INSERT INTO links (
 VALUES (
 	$1, $2, $3, $4, $5
 )
-RETURNING id`
+RETURNING id
+`
 const sqlUpdateLinkName = `
 UPDATE links SET name = $1 WHERE id = $2
 `
@@ -24,6 +26,11 @@ const sqlGetLinkByID = `
 SELECT id, name, url, view_count, client_address, created_at
 FROM links
 WHERE id = $1
+`
+const sqlGetLinkByName = `
+SELECT id, name, url, view_count, client_address, created_at
+FROM links
+WHERE name = $1
 `
 const sqlGetLinkByURL = `
 SELECT id, name, url, view_count, client_address, created_at
@@ -45,8 +52,16 @@ type Link struct {
 func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	l := &Link{}
 
+	err := c.db.Conn.QueryRow(sqlGetLinkByURL, url).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	if err != nil && err != sql.ErrNoRows {
+		return l, errors.New("Error while getting link by URL")
+	}
+	if l.ID != 0 {
+		return l, nil
+	}
+
 	id := 0
-	err := c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, "127.0.0.1", "NOW()").Scan(&id)
+	err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, clientAddress, "NOW()").Scan(&id)
 	if err != nil {
 		return l, errors.New("Error while inserting link")
 	}
@@ -58,7 +73,7 @@ func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 
 	err = c.db.Conn.QueryRow(sqlGetLinkByID, id).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
 	if err != nil {
-		return l, errors.New("Error while getting link")
+		return l, errors.New("Error while getting link by ID")
 	}
 
 	return l, nil
