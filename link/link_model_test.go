@@ -39,4 +39,12 @@ func TestLinkInserting(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	_, err = link.GetLink(lc, "U")
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = link.GetLink(lc, "AAA")
+	if err == nil {
+		t.Error("Link is not in db")
+	}
 }

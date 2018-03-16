@@ -48,6 +48,21 @@ type Link struct {
 	CreatedAt     string `json:"createdAt"`
 }
 
+// GetLink gets link from db by link name
+func GetLink(c *Controller, name string) (*Link, error) {
+	l := &Link{}
+
+	err := c.db.Conn.QueryRow(sqlGetLinkByName, name).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return l, errors.New("Error while getting link by URL")
+		}
+		return l, errors.New("Link not found")
+	}
+
+	return l, nil
+}
+
 // InsertLink in db. If inserted, return Link struct
 func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	l := &Link{}
