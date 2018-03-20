@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
+
+	"github.com/h00s/url-shortener-backend/host"
 )
 
 // Link represent one shortened link
@@ -35,7 +37,12 @@ func GetLink(c *Controller, name string) (*Link, error) {
 func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	l := &Link{}
 
-	err := c.db.Conn.QueryRow(sqlGetLinkByURL, url).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	err := host.IsValid(url)
+	if err != nil {
+		return l, errors.New("Link is invalid: " + err.Error())
+	}
+
+	err = c.db.Conn.QueryRow(sqlGetLinkByURL, url).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
 	if err != nil && err != sql.ErrNoRows {
 		return l, errors.New("Error while getting link by URL")
 	}
