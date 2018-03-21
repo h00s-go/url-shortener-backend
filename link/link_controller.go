@@ -34,8 +34,8 @@ func (lc *Controller) GetLink(c *gin.Context) {
 	}
 }
 
-// PostLink adds new link
-func (lc *Controller) PostLink(c *gin.Context) {
+// InsertLink adds new link
+func (lc *Controller) InsertLink(c *gin.Context) {
 	var postLinkData PostLinkData
 	if err := c.BindJSON(&postLinkData); err == nil {
 		l, err := InsertLink(lc, postLinkData.URL, c.ClientIP())

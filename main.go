@@ -31,7 +31,7 @@ func main() {
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/link/:name", lc.GetLink)
-		v1.POST("/link", lc.PostLink)
+		v1.POST("/link", lc.InsertLink)
 	}
 
 	r.Run()
