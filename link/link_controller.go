@@ -38,7 +38,7 @@ func (lc *Controller) GetLink(c *gin.Context) {
 func (lc *Controller) PostLink(c *gin.Context) {
 	var postLinkData PostLinkData
 	if err := c.BindJSON(&postLinkData); err == nil {
-		l, err := InsertLink(lc, postLinkData.URL, "127.0.0.1")
+		l, err := InsertLink(lc, postLinkData.URL, c.ClientIP())
 		if err == nil {
 			c.JSON(200, l)
 		} else {
