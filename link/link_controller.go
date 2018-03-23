@@ -10,8 +10,8 @@ type Controller struct {
 	db *db.Database
 }
 
-// PostLinkData represents data which is sent when posting new url
-type PostLinkData struct {
+// InsertLinkData represents data which is sent when posting new url
+type InsertLinkData struct {
 	URL string `json:"url" binding:"required"`
 }
 
@@ -36,9 +36,9 @@ func (lc *Controller) GetLink(c *gin.Context) {
 
 // InsertLink adds new link
 func (lc *Controller) InsertLink(c *gin.Context) {
-	var postLinkData PostLinkData
-	if err := c.BindJSON(&postLinkData); err == nil {
-		l, err := InsertLink(lc, postLinkData.URL, c.ClientIP())
+	var linkData InsertLinkData
+	if err := c.BindJSON(&linkData); err == nil {
+		l, err := InsertLink(lc, linkData.URL, c.ClientIP())
 		if err == nil {
 			c.JSON(200, l)
 		} else {
