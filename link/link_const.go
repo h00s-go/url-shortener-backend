@@ -40,5 +40,5 @@ WHERE url = $1
 const sqlGetPostCountInLastMinutes = `
 SELECT COUNT(*)
 FROM links
-WHERE client_address = $1 AND created_at > current_timestamp - interval '10 minutes'
+WHERE client_address = $1 AND created_at > current_timestamp - ($2 || ' minutes')::interval
 `

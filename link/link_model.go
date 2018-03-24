@@ -38,7 +38,7 @@ func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	l := &Link{}
 
 	linkCount := 0
-	err := c.db.Conn.QueryRow(sqlGetPostCountInLastMinutes, clientAddress).Scan(&linkCount)
+	err := c.db.Conn.QueryRow(sqlGetPostCountInLastMinutes, clientAddress, 10).Scan(&linkCount)
 	if err != nil {
 		return l, errors.New("Error while getting link count" + err.Error())
 	}
