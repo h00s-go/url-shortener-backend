@@ -37,7 +37,17 @@ func GetLink(c *Controller, name string) (*Link, error) {
 func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	l := &Link{}
 
-	err := host.IsValid(url)
+	linkCount := 0
+	err := c.db.Conn.QueryRow(sqlGetPostCountInLastMinutes, clientAddress).Scan(&linkCount)
+	if err != nil {
+		return l, errors.New("Error while getting link count" + err.Error())
+	}
+
+	if linkCount >= 10 {
+		return l, errors.New("Too many links posted, please wait couple of minutes")
+	}
+
+	err = host.IsValid(url)
 	if err != nil {
 		return l, errors.New("Link is invalid: " + err.Error())
 	}

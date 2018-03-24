@@ -35,3 +35,10 @@ SELECT id, name, url, view_count, client_address, created_at
 FROM links
 WHERE url = $1
 `
+
+// get link counts by ip address and interval - used for throttling
+const sqlGetPostCountInLastMinutes = `
+SELECT COUNT(*)
+FROM links
+WHERE client_address = $1 AND created_at > current_timestamp - interval '10 minutes'
+`
