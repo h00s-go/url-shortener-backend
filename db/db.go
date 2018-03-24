@@ -43,5 +43,11 @@ func (db *Database) Migrate() error {
 	}
 
 	_, err = db.Conn.Exec(sqlCreateLinks)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Conn.Exec(sqlCreateLinksIndex)
+
 	return err
 }

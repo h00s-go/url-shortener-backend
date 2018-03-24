@@ -24,3 +24,8 @@ CREATE TABLE IF NOT EXISTS links (
 	created_at timestamp NOT NULL
 )
 `
+
+// create index for faster link post throttling
+const sqlCreateLinksIndex = `
+CREATE INDEX IF NOT EXISTS links_client_address_idx ON links (client_address)
+`
