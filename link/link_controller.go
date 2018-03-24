@@ -23,7 +23,7 @@ func NewController(db *db.Database) *Controller {
 // GetLink get link with specific name
 func (lc *Controller) GetLink(c *gin.Context) {
 	name := c.Param("name")
-	l, err := GetLink(lc, name)
+	l, err := getLinkByName(lc, name)
 
 	if err == nil {
 		c.Redirect(302, l.URL)
@@ -38,7 +38,7 @@ func (lc *Controller) GetLink(c *gin.Context) {
 func (lc *Controller) InsertLink(c *gin.Context) {
 	var linkData InsertLinkData
 	if err := c.BindJSON(&linkData); err == nil {
-		l, err := InsertLink(lc, linkData.URL, c.ClientIP())
+		l, err := insertLink(lc, linkData.URL, c.ClientIP())
 		if err == nil {
 			c.JSON(200, l)
 		} else {

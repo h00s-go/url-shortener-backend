@@ -5,7 +5,6 @@ import (
 
 	"github.com/h00s/url-shortener-backend/config"
 	"github.com/h00s/url-shortener-backend/db"
-	"github.com/h00s/url-shortener-backend/link"
 )
 
 func TestLinkNames(t *testing.T) {
@@ -34,17 +33,17 @@ func TestLinkNames(t *testing.T) {
 func TestLinkInserting(t *testing.T) {
 	config, _ := config.Load("../configuration.json")
 	db, _ := db.Connect(config)
-	lc := link.NewController(db)
-	_, err := link.InsertLink(lc, "http://www.google.com/test", "127.0.0.1")
+	lc := NewController(db)
+	_, err := insertLink(lc, "http://www.google.com/test", "127.0.0.1")
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = link.GetLink(lc, "U")
+	_, err = getLinkByName(lc, "U")
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = link.GetLink(lc, "AAA")
-	if err == nil {
+	l, err := getLinkByName(lc, "AAA")
+	if l != nil {
 		t.Error("Link is not in db")
 	}
 }

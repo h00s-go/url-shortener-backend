@@ -3,6 +3,7 @@ package link
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/h00s/url-shortener-backend/host"
@@ -18,56 +19,64 @@ type Link struct {
 	CreatedAt     string `json:"createdAt"`
 }
 
-// GetLink gets link from db by link name
-func GetLink(c *Controller, name string) (*Link, error) {
+func getLinkByID(c *Controller, id int) (*Link, error) {
+	return getLink(c, sqlGetLinkByID, fmt.Sprint(id))
+}
+
+func getLinkByName(c *Controller, name string) (*Link, error) {
+	return getLink(c, sqlGetLinkByName, name)
+}
+
+func getLinkByURL(c *Controller, url string) (*Link, error) {
+	return getLink(c, sqlGetLinkByURL, url)
+}
+
+func getLink(c *Controller, query string, param string) (*Link, error) {
 	l := &Link{}
 
-	err := c.db.Conn.QueryRow(sqlGetLinkByName, name).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return l, errors.New("Error while getting link by URL")
-		}
-		return l, errors.New("Link not found")
+	err := c.db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, nil
+	case err != nil:
+		return nil, errors.New("Error while getting link (" + err.Error() + ")")
 	}
-
 	return l, nil
 }
 
 // InsertLink in db. If inserted, return Link struct
-func InsertLink(c *Controller, url string, clientAddress string) (*Link, error) {
-	l := &Link{}
-
+func insertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	if isSpammer(c, clientAddress) {
-		return l, errors.New("Too many links posted, please wait couple of minutes")
+		return nil, errors.New("Too many links posted, please wait couple of minutes")
 	}
 
 	err := host.IsValid(url)
 	if err != nil {
-		return l, errors.New("Link is invalid: " + err.Error())
+		return nil, errors.New("Link is invalid: " + err.Error())
 	}
 
-	err = c.db.Conn.QueryRow(sqlGetLinkByURL, url).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
-	if err != nil && err != sql.ErrNoRows {
-		return l, errors.New("Error while getting link by URL")
-	}
-	if l.ID != 0 {
-		return l, nil
-	}
-
-	id := 0
-	err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, clientAddress, "NOW()").Scan(&id)
+	l, err := getLinkByURL(c, url)
 	if err != nil {
-		return l, errors.New("Error while inserting link")
+		return nil, err
 	}
 
-	_, err = c.db.Conn.Exec(sqlUpdateLinkName, getNameFromID(id), id)
-	if err != nil {
-		return l, errors.New("Error while updating link name")
-	}
+	if l == nil {
+		l = &Link{}
+		id := 0
+		err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, clientAddress, "NOW()").Scan(&id)
+		if err != nil {
+			return nil, errors.New("Error while inserting link")
+		}
 
-	err = c.db.Conn.QueryRow(sqlGetLinkByID, id).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
-	if err != nil {
-		return l, errors.New("Error while getting link by ID")
+		_, err = c.db.Conn.Exec(sqlUpdateLinkName, getNameFromID(id), id)
+		if err != nil {
+			return nil, errors.New("Error while updating link name")
+		}
+
+		l, err = getLinkByID(c, id)
+		if err != nil {
+			return nil, errors.New("Error while getting link by ID")
+		}
 	}
 
 	return l, nil
