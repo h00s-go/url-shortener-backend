@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS links (
 `
 
 // create index for faster link post throttling
-const sqlCreateLinksIndex = `
+const sqlCreateLinksClientAddressIndex = `
 CREATE INDEX IF NOT EXISTS links_client_address_idx ON links (client_address)
+`
+
+const sqlCreateLinksCreatedAtIndex = `
+CREATE INDEX IF NOT EXISTS links_created_at_idx ON links (created_at)
 `

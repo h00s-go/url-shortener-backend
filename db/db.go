@@ -47,7 +47,12 @@ func (db *Database) Migrate() error {
 		return err
 	}
 
-	_, err = db.Conn.Exec(sqlCreateLinksIndex)
+	_, err = db.Conn.Exec(sqlCreateLinksClientAddressIndex)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Conn.Exec(sqlCreateLinksCreatedAtIndex)
 
 	return err
 }
