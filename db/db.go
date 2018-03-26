@@ -50,7 +50,8 @@ func (db *Database) Migrate() (err error) {
 		return err
 	}
 
-	err = tx.QueryRow(sqlGetSchema).Scan()
+	version := 0
+	err = tx.QueryRow(sqlGetSchema).Scan(&version)
 	switch {
 	case err == sql.ErrNoRows:
 		_, err = tx.Exec(sqlInsertSchema)

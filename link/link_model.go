@@ -62,7 +62,7 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	if l == nil {
 		l = &Link{}
 		id := 0
-		err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, clientAddress, "NOW()").Scan(&id)
+		err = c.db.Conn.QueryRow(sqlInsertLink, nil, url, clientAddress, "NOW()").Scan(&id)
 		if err != nil {
 			return nil, errors.New("Error while inserting link")
 		}
