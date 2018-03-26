@@ -31,15 +31,34 @@ func Connect(c config.Configuration) (*Database, error) {
 }
 
 // Migrate migrates database to valid state
-func (db *Database) Migrate() error {
-	_, err := db.Conn.Exec(sqlCreateSchema)
+func (db *Database) Migrate() (err error) {
+	tx, err := db.Conn.Begin()
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	_, err = tx.Exec(sqlCreateSchema)
 	if err != nil {
 		return err
 	}
 
-	err = db.Conn.QueryRow(sqlGetSchema).Scan()
-	if err == sql.ErrNoRows {
-		db.Conn.Exec(sqlInsertSchema)
+	err = tx.QueryRow(sqlGetSchema).Scan()
+	switch {
+	case err == sql.ErrNoRows:
+		_, err = tx.Exec(sqlInsertSchema)
+		if err != nil {
+			return
+		}
+	case err != nil:
+		return
 	}
 
 	_, err = db.Conn.Exec(sqlCreateLinks)
@@ -53,6 +72,9 @@ func (db *Database) Migrate() error {
 	}
 
 	_, err = db.Conn.Exec(sqlCreateLinksCreatedAtIndex)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return
 }
