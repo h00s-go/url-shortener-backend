@@ -14,7 +14,6 @@ type Link struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	URL           string `json:"url"`
-	ViewCount     int    `json:"viewCount"`
 	ClientAddress string `json:"clientAddress"`
 	CreatedAt     string `json:"createdAt"`
 }
@@ -34,7 +33,7 @@ func getLinkByURL(c *Controller, url string) (*Link, error) {
 func getLink(c *Controller, query string, param string) (*Link, error) {
 	l := &Link{}
 
-	err := c.db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ViewCount, &l.ClientAddress, &l.CreatedAt)
+	err := c.db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ClientAddress, &l.CreatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil, nil
@@ -63,7 +62,7 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	if l == nil {
 		l = &Link{}
 		id := 0
-		err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, 0, clientAddress, "NOW()").Scan(&id)
+		err = c.db.Conn.QueryRow(sqlInsertLink, "0", url, clientAddress, "NOW()").Scan(&id)
 		if err != nil {
 			return nil, errors.New("Error while inserting link")
 		}
