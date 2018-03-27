@@ -47,7 +47,7 @@ func (db *Database) Migrate() (err error) {
 
 	_, err = tx.Exec(sqlCreateSchema)
 	if err != nil {
-		return err
+		return
 	}
 
 	version := 0
@@ -64,17 +64,17 @@ func (db *Database) Migrate() (err error) {
 
 	_, err = db.Conn.Exec(sqlCreateLinks)
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = db.Conn.Exec(sqlCreateLinksClientAddressIndex)
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = db.Conn.Exec(sqlCreateLinksCreatedAtIndex)
 	if err != nil {
-		return err
+		return
 	}
 
 	return
