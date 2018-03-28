@@ -45,6 +45,8 @@ func getLink(c *Controller, query string, param string) (*Link, error) {
 
 // InsertLink in db. If inserted, return Link struct
 func insertLink(c *Controller, url string, clientAddress string) (*Link, error) {
+	url = strings.TrimSpace(url)
+
 	if isSpammer(c, clientAddress) {
 		return nil, errors.New("Too many links posted, please wait couple of minutes")
 	}
