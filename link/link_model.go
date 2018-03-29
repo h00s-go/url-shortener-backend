@@ -47,10 +47,6 @@ func getLink(c *Controller, query string, param string) (*Link, error) {
 func insertLink(c *Controller, url string, clientAddress string) (*Link, error) {
 	url = strings.TrimSpace(url)
 
-	if isSpammer(c, clientAddress) {
-		return nil, errors.New("Too many links posted, please wait couple of minutes")
-	}
-
 	err := host.IsValid(url)
 	if err != nil {
 		return nil, errors.New("Link is invalid: " + err.Error())
@@ -97,16 +93,6 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	}
 
 	return l, nil
-}
-
-func isSpammer(c *Controller, clientAddress string) bool {
-	linkCount := 0
-	c.db.Conn.QueryRow(sqlGetPostCountInLastMinutes, clientAddress, 10).Scan(&linkCount)
-
-	if linkCount >= 10 {
-		return true
-	}
-	return false
 }
 
 // getNameFromID gets name from numerical ID

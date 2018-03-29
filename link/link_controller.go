@@ -36,19 +36,35 @@ func (lc *Controller) GetLink(c *gin.Context) {
 
 // InsertLink adds new link
 func (lc *Controller) InsertLink(c *gin.Context) {
-	var linkData InsertLinkData
-	if err := c.BindJSON(&linkData); err == nil {
-		l, err := insertLink(lc, linkData.URL, c.ClientIP())
-		if err == nil {
-			c.JSON(200, l)
+	if !lc.isSpammer(c.ClientIP()) {
+		var linkData InsertLinkData
+		if err := c.BindJSON(&linkData); err == nil {
+			l, err := insertLink(lc, linkData.URL, c.ClientIP())
+			if err == nil {
+				c.JSON(200, l)
+			} else {
+				c.JSON(404, gin.H{
+					"message": err.Error(),
+				})
+			}
 		} else {
 			c.JSON(404, gin.H{
-				"message": err.Error(),
+				"message": "request is invalid",
 			})
 		}
 	} else {
-		c.JSON(404, gin.H{
-			"message": "request is invalid",
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": "too many links posted, please wait couple of minutes",
 		})
 	}
+}
+
+func (lc *Controller) isSpammer(clientAddress string) bool {
+	linkCount := 0
+	lc.db.Conn.QueryRow(sqlGetPostCountInLastMinutes, clientAddress, 10).Scan(&linkCount)
+
+	if linkCount >= 10 {
+		return true
+	}
+	return false
 }
