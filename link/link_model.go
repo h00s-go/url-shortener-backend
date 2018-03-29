@@ -23,11 +23,11 @@ func getLinkByID(c *Controller, id int) (*Link, error) {
 }
 
 func getLinkByName(c *Controller, name string) (*Link, error) {
-	return getLink(c, sqlGetLinkByName, name)
+	return getLink(c, sqlGetLinkByName, strings.TrimSpace(name))
 }
 
 func getLinkByURL(c *Controller, url string) (*Link, error) {
-	return getLink(c, sqlGetLinkByURL, url)
+	return getLink(c, sqlGetLinkByURL, strings.TrimSpace(url))
 }
 
 func getLink(c *Controller, query string, param string) (*Link, error) {
