@@ -56,28 +56,44 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 		return nil, errors.New("Link is invalid: " + err.Error())
 	}
 
+	// Check if URL is already in DB
 	l, err := getLinkByURL(c, url)
+	switch {
+	case err != nil:
+		return nil, err
+	case l != nil:
+		return l, nil
+	}
+
+	// URL is not in DB, insert it
+	l = &Link{}
+	id := 0
+
+	tx, err := c.db.Conn.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	if l == nil {
-		l = &Link{}
-		id := 0
-		err = c.db.Conn.QueryRow(sqlInsertLink, nil, url, clientAddress, "NOW()").Scan(&id)
-		if err != nil {
-			return nil, errors.New("Error while inserting link")
-		}
+	err = tx.QueryRow(sqlInsertLink, nil, url, clientAddress, "NOW()").Scan(&id)
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("Error while inserting link")
+	}
 
-		_, err = c.db.Conn.Exec(sqlUpdateLinkName, getNameFromID(id), id)
-		if err != nil {
-			return nil, errors.New("Error while updating link name")
-		}
+	_, err = tx.Exec(sqlUpdateLinkName, getNameFromID(id), id)
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("Error while updating link name")
+	}
 
-		l, err = getLinkByID(c, id)
-		if err != nil {
-			return nil, errors.New("Error while getting link by ID")
-		}
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
+	l, err = getLinkByID(c, id)
+	if err != nil {
+		return nil, errors.New("Error while getting link")
 	}
 
 	return l, nil
