@@ -25,9 +25,14 @@ func (lc *Controller) GetLink(c *gin.Context) {
 	name := c.Param("name")
 	l, err := getLinkByName(lc, name)
 
-	if err == nil {
+	switch {
+	case l != nil:
 		c.Redirect(302, l.URL)
-	} else {
+	case err != nil:
+		c.JSON(500, gin.H{
+			"message": err.Error(),
+		})
+	default:
 		c.JSON(404, gin.H{
 			"message": "link not found",
 		})
@@ -41,19 +46,19 @@ func (lc *Controller) InsertLink(c *gin.Context) {
 		if err := c.BindJSON(&linkData); err == nil {
 			l, err := insertLink(lc, linkData.URL, c.ClientIP())
 			if err == nil {
-				c.JSON(200, l)
+				c.JSON(201, l)
 			} else {
-				c.JSON(404, gin.H{
+				c.JSON(500, gin.H{
 					"message": err.Error(),
 				})
 			}
 		} else {
-			c.JSON(404, gin.H{
+			c.JSON(400, gin.H{
 				"message": "request is invalid",
 			})
 		}
 	} else {
-		c.AbortWithStatusJSON(400, gin.H{
+		c.AbortWithStatusJSON(429, gin.H{
 			"message": "too many links posted, please wait couple of minutes",
 		})
 	}
