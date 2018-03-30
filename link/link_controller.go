@@ -32,11 +32,26 @@ func (lc *Controller) GetLink(c *gin.Context) {
 
 	switch {
 	case l != nil:
+		c.JSON(200, l)
+	case err != nil:
+		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
+	default:
+		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
+	}
+}
+
+// RedirectToLink redirects to link with specific name
+func (lc *Controller) RedirectToLink(c *gin.Context) {
+	name := c.Param("name")
+	l, err := getLinkByName(lc.db, name)
+
+	switch {
+	case l != nil:
 		c.Redirect(302, l.URL)
 	case err != nil:
 		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
 	default:
-		c.JSON(404, errorResponse{"Link not found", "Link not found with specified name"})
+		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 

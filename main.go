@@ -31,6 +31,7 @@ func main() {
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/link/:name", lc.GetLink)
+		v1.GET("/link/:name/redirect", lc.RedirectToLink)
 		v1.POST("/link", lc.InsertLink)
 	}
 
