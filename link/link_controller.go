@@ -10,6 +10,11 @@ type Controller struct {
 	db *db.Database
 }
 
+type errorResponse struct {
+	Message     string `json:"message"`
+	Description string `json:"description"`
+}
+
 // InsertLinkData represents data which is sent when posting new url
 type InsertLinkData struct {
 	URL string `json:"url" binding:"required"`
@@ -29,13 +34,9 @@ func (lc *Controller) GetLink(c *gin.Context) {
 	case l != nil:
 		c.Redirect(302, l.URL)
 	case err != nil:
-		c.JSON(500, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
 	default:
-		c.JSON(404, gin.H{
-			"message": "link not found",
-		})
+		c.JSON(404, errorResponse{"Link not found", "Link not found with specified name"})
 	}
 }
 
@@ -48,19 +49,13 @@ func (lc *Controller) InsertLink(c *gin.Context) {
 			if err == nil {
 				c.JSON(201, l)
 			} else {
-				c.JSON(500, gin.H{
-					"message": err.Error(),
-				})
+				c.JSON(500, errorResponse{"Error while adding link", err.Error()})
 			}
 		} else {
-			c.JSON(400, gin.H{
-				"message": "request is invalid",
-			})
+			c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
 		}
 	} else {
-		c.AbortWithStatusJSON(429, gin.H{
-			"message": "too many links posted, please wait couple of minutes",
-		})
+		c.JSON(429, errorResponse{"Rate limiting", "Too many links posted, please wait couple of minutes"})
 	}
 }
 
