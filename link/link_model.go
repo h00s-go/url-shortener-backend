@@ -15,7 +15,7 @@ type Link struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	URL           string `json:"url"`
-	ClientAddress string `json:"clientAddress"`
+	clientAddress string
 	CreatedAt     string `json:"createdAt"`
 }
 
@@ -34,7 +34,7 @@ func getLinkByURL(db *db.Database, url string) (*Link, error) {
 func getLink(db *db.Database, query string, param string) (*Link, error) {
 	l := &Link{}
 
-	err := db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ClientAddress, &l.CreatedAt)
+	err := db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.clientAddress, &l.CreatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil, nil
