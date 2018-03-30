@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/host"
 )
 
@@ -18,22 +19,22 @@ type Link struct {
 	CreatedAt     string `json:"createdAt"`
 }
 
-func getLinkByID(c *Controller, id int) (*Link, error) {
-	return getLink(c, sqlGetLinkByID, fmt.Sprint(id))
+func getLinkByID(db *db.Database, id int) (*Link, error) {
+	return getLink(db, sqlGetLinkByID, fmt.Sprint(id))
 }
 
-func getLinkByName(c *Controller, name string) (*Link, error) {
-	return getLink(c, sqlGetLinkByName, strings.TrimSpace(name))
+func getLinkByName(db *db.Database, name string) (*Link, error) {
+	return getLink(db, sqlGetLinkByName, strings.TrimSpace(name))
 }
 
-func getLinkByURL(c *Controller, url string) (*Link, error) {
-	return getLink(c, sqlGetLinkByURL, strings.TrimSpace(url))
+func getLinkByURL(db *db.Database, url string) (*Link, error) {
+	return getLink(db, sqlGetLinkByURL, strings.TrimSpace(url))
 }
 
-func getLink(c *Controller, query string, param string) (*Link, error) {
+func getLink(db *db.Database, query string, param string) (*Link, error) {
 	l := &Link{}
 
-	err := c.db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ClientAddress, &l.CreatedAt)
+	err := db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.ClientAddress, &l.CreatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil, nil
@@ -44,7 +45,7 @@ func getLink(c *Controller, query string, param string) (*Link, error) {
 }
 
 // InsertLink in db. If inserted, return Link struct
-func insertLink(c *Controller, url string, clientAddress string) (*Link, error) {
+func insertLink(db *db.Database, url string, clientAddress string) (*Link, error) {
 	url = strings.TrimSpace(url)
 
 	err := host.IsValid(url)
@@ -53,7 +54,7 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	}
 
 	// Check if URL is already in DB
-	l, err := getLinkByURL(c, url)
+	l, err := getLinkByURL(db, url)
 	switch {
 	case err != nil:
 		return nil, err
@@ -65,7 +66,7 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 	l = &Link{}
 	id := 0
 
-	tx, err := c.db.Conn.Begin()
+	tx, err := db.Conn.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func insertLink(c *Controller, url string, clientAddress string) (*Link, error) 
 		return nil, err
 	}
 
-	l, err = getLinkByID(c, id)
+	l, err = getLinkByID(db, id)
 	if err != nil {
 		return nil, errors.New("Error while getting link")
 	}

@@ -33,16 +33,15 @@ func TestLinkNames(t *testing.T) {
 func TestLinkInserting(t *testing.T) {
 	config, _ := config.Load("../configuration_test.json")
 	db, _ := db.Connect(config)
-	lc := NewController(db)
-	_, err := insertLink(lc, "http://www.google.com/test", "127.0.0.1")
+	_, err := insertLink(db, "http://www.google.com/test", "127.0.0.1")
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = getLinkByName(lc, "U")
+	_, err = getLinkByName(db, "U")
 	if err != nil {
 		t.Error(err)
 	}
-	l, err := getLinkByName(lc, "AAA")
+	l, err := getLinkByName(db, "AAA")
 	if l != nil {
 		t.Error("Link is not in db")
 	}
