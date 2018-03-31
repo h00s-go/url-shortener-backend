@@ -30,10 +30,10 @@ func main() {
 	r := gin.Default()
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/link/:name", lc.GetLink)
-		v1.GET("/link/:name/redirect", lc.RedirectToLink)
-		v1.GET("/link/:name/stats", lc.GetLinkActivityStats)
-		v1.POST("/link", lc.InsertLink)
+		v1.GET("/links/:name", lc.GetLink)
+		v1.GET("/links/:name/redirect", lc.RedirectToLink)
+		v1.GET("/links/:name/stats", lc.GetLinkActivityStats)
+		v1.POST("/links", lc.InsertLink)
 	}
 
 	r.Run()
