@@ -32,6 +32,7 @@ func main() {
 	{
 		v1.GET("/link/:name", lc.GetLink)
 		v1.GET("/link/:name/redirect", lc.RedirectToLink)
+		v1.GET("/link/:name/stats", lc.GetLinkActivityStats)
 		v1.POST("/link", lc.InsertLink)
 	}
 

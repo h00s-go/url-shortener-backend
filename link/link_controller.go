@@ -41,6 +41,22 @@ func (lc *Controller) GetLink(c *gin.Context) {
 	}
 }
 
+// GetLinkActivityStats get link with specific name
+func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
+	name := c.Param("name")
+	id := getIDFromName(name)
+	s, err := getLinkActivityStats(lc.db, id)
+
+	switch {
+	case s != nil:
+		c.JSON(200, s)
+	case err != nil:
+		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
+	default:
+		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
+	}
+}
+
 // RedirectToLink redirects to link with specific name
 func (lc *Controller) RedirectToLink(c *gin.Context) {
 	name := c.Param("name")

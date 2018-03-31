@@ -8,3 +8,9 @@ VALUES (
 	$1, $2, $3
 )
 `
+
+const sqlGetLinkActivityStats = `
+SELECT COUNT(*)
+FROM activities
+WHERE link_id = $1
+`
