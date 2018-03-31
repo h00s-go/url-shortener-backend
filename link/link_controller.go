@@ -3,11 +3,13 @@ package link
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/h00s/url-shortener-backend/db"
+	"github.com/h00s/url-shortener-backend/logger"
 )
 
 // Controller for Link methods
 type Controller struct {
-	db *db.Database
+	db     *db.Database
+	logger *logger.Logger
 }
 
 type errorResponse struct {
@@ -21,8 +23,8 @@ type InsertLinkData struct {
 }
 
 // NewController creates new link controller
-func NewController(db *db.Database) *Controller {
-	return &Controller{db: db}
+func NewController(db *db.Database, logger *logger.Logger) *Controller {
+	return &Controller{db: db, logger: logger}
 }
 
 // GetLink get link with specific name
@@ -35,7 +37,8 @@ func (lc *Controller) GetLink(c *gin.Context) {
 		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.JSON(200, l)
 	case err != nil:
-		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
+		lc.logger.Error("Error while getting link: " + err.Error())
+		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
 	}
@@ -51,7 +54,8 @@ func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
 	case s != nil:
 		c.JSON(200, s)
 	case err != nil:
-		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
+		lc.logger.Error("Error while getting link: " + err.Error())
+		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
 	}
@@ -67,7 +71,8 @@ func (lc *Controller) RedirectToLink(c *gin.Context) {
 		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.Redirect(302, l.URL)
 	case err != nil:
-		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
+		lc.logger.Error("Error while getting link: " + err.Error())
+		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
@@ -82,7 +87,8 @@ func (lc *Controller) InsertLink(c *gin.Context) {
 			if err == nil {
 				c.JSON(201, l)
 			} else {
-				c.JSON(500, errorResponse{"Error while adding link", err.Error()})
+				lc.logger.Error("Error while inserting link: " + err.Error())
+				c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
 			}
 		} else {
 			c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
