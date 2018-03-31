@@ -39,7 +39,6 @@ CREATE INDEX IF NOT EXISTS links_created_at_idx ON links (created_at)
 // Activity SQL
 const sqlCreateActivities = `
 CREATE TABLE IF NOT EXISTS activities (
-	id bigserial PRIMARY KEY,
 	link_id bigint NOT NULL REFERENCES links (id) ON DELETE CASCADE,
 	client_address inet NOT NULL,
 	accessed_at timestamp NOT NULL

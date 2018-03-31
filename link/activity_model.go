@@ -8,7 +8,6 @@ import (
 
 // Activity represents access to one of the links
 type Activity struct {
-	ID            int `json:"id"`
 	LinkID        int `json:"linkId"`
 	clientAddress string
 	AccessedAt    string `json:"AccessedAt"`
