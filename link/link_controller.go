@@ -32,6 +32,7 @@ func (lc *Controller) GetLink(c *gin.Context) {
 
 	switch {
 	case l != nil:
+		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.JSON(200, l)
 	case err != nil:
 		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
@@ -47,6 +48,7 @@ func (lc *Controller) RedirectToLink(c *gin.Context) {
 
 	switch {
 	case l != nil:
+		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.Redirect(302, l.URL)
 	case err != nil:
 		c.JSON(500, errorResponse{"Error while getting link", err.Error()})
