@@ -77,5 +77,15 @@ func (db *Database) Migrate() (err error) {
 		return
 	}
 
+	_, err = db.Conn.Exec(sqlCreateActivities)
+	if err != nil {
+		return
+	}
+
+	_, err = db.Conn.Exec(sqlCreateActivitiesLinkIDIndex)
+	if err != nil {
+		return
+	}
+
 	return
 }
