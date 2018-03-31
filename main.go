@@ -32,7 +32,7 @@ func main() {
 		l.Fatal(err.Error())
 	}
 
-	lc := link.NewController(db)
+	lc := link.NewController(db, l)
 
 	r := gin.Default()
 	v1 := r.Group("/v1")
