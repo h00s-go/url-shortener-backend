@@ -7,22 +7,29 @@ import (
 	"github.com/h00s/url-shortener-backend/config"
 	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/link"
+	"github.com/h00s/url-shortener-backend/logger"
 )
 
 func main() {
-	config, err := config.Load("configuration.json")
+	l, err := logger.New("url-shortener-backend.log")
 	if err != nil {
 		log.Fatal(err)
+	}
+	defer l.Close()
+
+	config, err := config.Load("configuration.json")
+	if err != nil {
+		l.Fatal(err.Error())
 	}
 
 	db, err := db.Connect(config)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err.Error())
 	}
 
 	err = db.Migrate()
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err.Error())
 	}
 
 	lc := link.NewController(db)
@@ -36,5 +43,6 @@ func main() {
 		v1.POST("/links", lc.InsertLink)
 	}
 
+	l.Info("Started gin")
 	r.Run()
 }
