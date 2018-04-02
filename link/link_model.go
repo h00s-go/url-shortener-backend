@@ -74,13 +74,13 @@ func insertLink(db *db.Database, url string, clientAddress string) (*Link, error
 	err = tx.QueryRow(sqlInsertLink, nil, url, clientAddress, "NOW()").Scan(&id)
 	if err != nil {
 		tx.Rollback()
-		return nil, errors.New("Error while inserting link")
+		return nil, errors.New("Error while inserting link: " + err.Error())
 	}
 
 	_, err = tx.Exec(sqlUpdateLinkName, getNameFromID(id), id)
 	if err != nil {
 		tx.Rollback()
-		return nil, errors.New("Error while updating link name")
+		return nil, errors.New("Error while updating link name: " + err.Error())
 	}
 
 	err = tx.Commit()
@@ -90,7 +90,7 @@ func insertLink(db *db.Database, url string, clientAddress string) (*Link, error
 
 	l, err = getLinkByID(db, id)
 	if err != nil {
-		return nil, errors.New("Error while getting link")
+		return nil, errors.New("Error while getting link:" + err.Error())
 	}
 
 	return l, nil

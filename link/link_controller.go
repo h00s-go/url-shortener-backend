@@ -37,7 +37,7 @@ func (lc *Controller) GetLink(c *gin.Context) {
 		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.JSON(200, l)
 	case err != nil:
-		lc.logger.Error("Error while getting link: " + err.Error())
+		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
@@ -54,7 +54,7 @@ func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
 	case s != nil:
 		c.JSON(200, s)
 	case err != nil:
-		lc.logger.Error("Error while getting link: " + err.Error())
+		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
@@ -71,7 +71,7 @@ func (lc *Controller) RedirectToLink(c *gin.Context) {
 		insertActivity(lc.db, l.ID, c.ClientIP())
 		c.Redirect(302, l.URL)
 	case err != nil:
-		lc.logger.Error("Error while getting link: " + err.Error())
+		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
@@ -87,7 +87,7 @@ func (lc *Controller) InsertLink(c *gin.Context) {
 			if err == nil {
 				c.JSON(201, l)
 			} else {
-				lc.logger.Error("Error while inserting link: " + err.Error())
+				lc.logger.Error(err.Error())
 				c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
 			}
 		} else {
