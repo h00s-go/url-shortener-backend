@@ -19,7 +19,7 @@ func New(filename string) (*Logger, error) {
 		return nil, errors.New("Error creating file for logging")
 	}
 
-	l := &Logger{log.New(f, "", log.Lshortfile), f}
+	l := &Logger{log.New(f, "", log.Ldate|log.Ltime|log.Lshortfile), f}
 	return l, nil
 }
 
@@ -28,26 +28,32 @@ func (l *Logger) Close() error {
 	return l.f.Close()
 }
 
+// Debug prints debug message to log file
+func (l *Logger) Debug(text string) {
+	l.log.SetPrefix("[DEBU] ")
+	l.log.Println(text)
+}
+
 // Error prints error message to log file
 func (l *Logger) Error(text string) {
-	l.log.SetPrefix("ERROR: ")
+	l.log.SetPrefix("[ERRO] ")
 	l.log.Println(text)
 }
 
 // Fatal prints fatal message to log file
 func (l *Logger) Fatal(text string) {
-	l.log.SetPrefix("FATAL: ")
+	l.log.SetPrefix("[ERRO] ")
 	l.log.Fatalln(text)
 }
 
 // Info prints informational message to log file
 func (l *Logger) Info(text string) {
-	l.log.SetPrefix("INFO: ")
+	l.log.SetPrefix("[INFO] ")
 	l.log.Println(text)
 }
 
 // Warning prints warning message to log file
 func (l *Logger) Warning(text string) {
-	l.log.SetPrefix("WARNING: ")
+	l.log.SetPrefix("[WARN] ")
 	l.log.Println(text)
 }
