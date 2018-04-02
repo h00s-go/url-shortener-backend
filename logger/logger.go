@@ -19,7 +19,7 @@ func New(filename string) (*Logger, error) {
 		return nil, errors.New("Error creating file for logging")
 	}
 
-	l := &Logger{log.New(f, "", log.Ldate|log.Ltime|log.Lshortfile), f}
+	l := &Logger{log.New(f, "", log.Ldate|log.Ltime), f}
 	return l, nil
 }
 
