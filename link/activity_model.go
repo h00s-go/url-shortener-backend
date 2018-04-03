@@ -22,7 +22,7 @@ type Stats struct {
 func insertActivity(db *db.Database, linkID int, clientAddress string) error {
 	_, err := db.Conn.Exec(sqlInsertActivity, linkID, clientAddress, "NOW()")
 	if err != nil {
-		return errors.New("Error while inserting activity")
+		return errors.New("Error while inserting activity: " + err.Error())
 	}
 	return nil
 }
