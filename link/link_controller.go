@@ -29,6 +29,15 @@ func NewController(db *db.Database, logger *logger.Logger) *Controller {
 
 // GetLink get link with specific name
 func (lc *Controller) GetLink(c *gin.Context) {
+	lc.getLink(c, false)
+}
+
+// RedirectToLink get link with specifig name and redirects to it's url
+func (lc *Controller) RedirectToLink(c *gin.Context) {
+	lc.getLink(c, true)
+}
+
+func (lc *Controller) getLink(c *gin.Context, redirect bool) {
 	name := c.Param("name")
 	l, err := getLinkByName(lc.db, name)
 
@@ -37,31 +46,16 @@ func (lc *Controller) GetLink(c *gin.Context) {
 		if err := insertActivity(lc.db, l.ID, c.ClientIP()); err != nil {
 			lc.logger.Error(err.Error())
 		}
-		c.JSON(200, l)
+		if redirect {
+			c.Redirect(302, l.URL)
+		} else {
+			c.JSON(200, l)
+		}
 	case err != nil:
 		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
 		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
-	}
-}
-
-// RedirectToLink redirects to link with specific name
-func (lc *Controller) RedirectToLink(c *gin.Context) {
-	name := c.Param("name")
-	l, err := getLinkByName(lc.db, name)
-
-	switch {
-	case l != nil:
-		if err := insertActivity(lc.db, l.ID, c.ClientIP()); err != nil {
-			lc.logger.Error(err.Error())
-		}
-		c.Redirect(302, l.URL)
-	case err != nil:
-		lc.logger.Error(err.Error())
-		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
-	default:
-		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 
