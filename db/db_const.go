@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS links_created_at_idx ON links (created_at)
 `
 
 // ############
-// Activity SQL
+// Activities SQL
 const sqlCreateActivities = `
 CREATE TABLE IF NOT EXISTS activities (
 	link_id bigint NOT NULL REFERENCES links (id) ON DELETE CASCADE,

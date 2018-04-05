@@ -55,7 +55,7 @@ func (lc *Controller) getLink(c *gin.Context, redirect bool) {
 		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
-		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
+		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 
@@ -72,7 +72,7 @@ func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
 		lc.logger.Error(err.Error())
 		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
-		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found "})
+		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 
