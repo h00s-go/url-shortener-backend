@@ -14,6 +14,9 @@ type Configuration struct {
 		Password string `json:"password"`
 		Name     string `json:"name"`
 	} `json:"database"`
+	Server struct {
+		Address string `json:"address"`
+	} `json:"server"`
 }
 
 // Load loads configuration from path

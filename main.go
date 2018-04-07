@@ -43,6 +43,6 @@ func main() {
 		v1.POST("/links", lc.InsertLink)
 	}
 
-	l.Info("Started gin")
-	r.Run()
+	l.Info("Starting HTTP server...")
+	r.Run(config.Server.Address)
 }
