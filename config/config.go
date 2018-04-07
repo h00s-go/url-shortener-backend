@@ -17,6 +17,9 @@ type Configuration struct {
 	Server struct {
 		Address string `json:"address"`
 	} `json:"server"`
+	Log struct {
+		Filename string `json:"filename"`
+	} `json:"log"`
 }
 
 // Load loads configuration from path

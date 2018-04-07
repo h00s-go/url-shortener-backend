@@ -11,18 +11,18 @@ import (
 )
 
 func main() {
-	l, err := logger.New("url-shortener-backend.log")
+	c, err := config.Load("configuration.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	l, err := logger.New(c.Log.Filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer l.Close()
 
-	config, err := config.Load("configuration.json")
-	if err != nil {
-		l.Fatal(err.Error())
-	}
-
-	db, err := db.Connect(config)
+	db, err := db.Connect(c)
 	if err != nil {
 		l.Fatal(err.Error())
 	}
@@ -44,5 +44,5 @@ func main() {
 	}
 
 	l.Info("Starting HTTP server...")
-	r.Run(config.Server.Address)
+	r.Run(c.Server.Address)
 }
