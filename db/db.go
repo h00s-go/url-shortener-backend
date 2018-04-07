@@ -15,8 +15,8 @@ type Database struct {
 }
 
 // Connect create new Database struct and connects to DB
-func Connect(c config.Configuration) (*Database, error) {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name)
+func Connect(db config.Database) (*Database, error) {
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Password, db.Name)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)

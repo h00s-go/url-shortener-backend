@@ -22,7 +22,7 @@ func main() {
 	}
 	defer l.Close()
 
-	db, err := db.Connect(c)
+	db, err := db.Connect(c.Database)
 	if err != nil {
 		l.Fatal(err.Error())
 	}
