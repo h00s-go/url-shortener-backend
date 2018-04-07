@@ -12,7 +12,7 @@ func TestDB(t *testing.T) {
 		t.Error("Unable to load configuration")
 	}
 
-	db, err := Connect(c)
+	db, err := Connect(c.Database)
 	if err != nil {
 		t.Error("Unable to connect to DB", err)
 	}
