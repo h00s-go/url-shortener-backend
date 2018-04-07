@@ -62,27 +62,27 @@ func (db *Database) Migrate() (err error) {
 		return
 	}
 
-	_, err = db.Conn.Exec(sqlCreateLinks)
+	_, err = tx.Exec(sqlCreateLinks)
 	if err != nil {
 		return
 	}
 
-	_, err = db.Conn.Exec(sqlCreateLinksClientAddressIndex)
+	_, err = tx.Exec(sqlCreateLinksClientAddressIndex)
 	if err != nil {
 		return
 	}
 
-	_, err = db.Conn.Exec(sqlCreateLinksCreatedAtIndex)
+	_, err = tx.Exec(sqlCreateLinksCreatedAtIndex)
 	if err != nil {
 		return
 	}
 
-	_, err = db.Conn.Exec(sqlCreateActivities)
+	_, err = tx.Exec(sqlCreateActivities)
 	if err != nil {
 		return
 	}
 
-	_, err = db.Conn.Exec(sqlCreateActivitiesLinkIDIndex)
+	_, err = tx.Exec(sqlCreateActivitiesLinkIDIndex)
 	if err != nil {
 		return
 	}

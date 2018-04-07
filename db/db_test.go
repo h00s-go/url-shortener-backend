@@ -17,7 +17,7 @@ func TestDB(t *testing.T) {
 		t.Error("Unable to connect to DB", err)
 	}
 
-	db.Conn.Query("DROP TABLE schema; DROP TABLE links;")
+	db.Conn.Query("DROP TABLE schema; DROP TABLE links; DROP TABLE activities;")
 
 	err = db.Migrate()
 	if err != nil {
