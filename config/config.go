@@ -10,6 +10,7 @@ type Configuration struct {
 	Database Database `json:"database"`
 	Server   Server   `json:"server"`
 	Log      Log      `json:"log"`
+	Router   Router   `json:"router"`
 }
 
 // Database defines DB configuration
@@ -29,6 +30,11 @@ type Server struct {
 // Log defines logging configuration (log filename)
 type Log struct {
 	Filename string `json:"filename"`
+}
+
+// Router defines router (Gin) configuration
+type Router struct {
+	Release bool `json:"release"`
 }
 
 // Load loads configuration from path

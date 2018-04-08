@@ -11,5 +11,8 @@
   },
   "log": {
     "filename": "url-shortener-backend.log"
+  },
+  "router": {
+    "release": false
   }
 }
