@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -34,15 +35,19 @@ func Connect(db config.Database) (*Database, error) {
 func (db *Database) Migrate() (err error) {
 	tx, err := db.Conn.Begin()
 	if err != nil {
-		return
+		return errors.New("Unable to start transaction: " + err.Error())
 	}
 
-	defer func() {
+	defer func() error {
 		if err != nil {
 			tx.Rollback()
-			return
+			return errors.New("There was an error in migrate transaction: " + err.Error())
 		}
 		err = tx.Commit()
+		if err != nil {
+			return errors.New("There was an error in commiting migrate transaction: " + err.Error())
+		}
+		return nil
 	}()
 
 	_, err = tx.Exec(sqlCreateSchema)
