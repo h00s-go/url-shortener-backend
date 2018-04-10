@@ -38,16 +38,15 @@ func (db *Database) Migrate() (err error) {
 		return errors.New("Unable to start transaction: " + err.Error())
 	}
 
-	defer func() error {
+	defer func() {
 		if err != nil {
 			tx.Rollback()
-			return errors.New("There was an error in migrate transaction: " + err.Error())
+			err = errors.New("There was an error in migrate transaction: " + err.Error())
 		}
 		err = tx.Commit()
 		if err != nil {
-			return errors.New("There was an error in commiting migrate transaction: " + err.Error())
+			err = errors.New("There was an error in commiting migrate transaction: " + err.Error())
 		}
-		return nil
 	}()
 
 	_, err = tx.Exec(sqlCreateSchema)
