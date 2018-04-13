@@ -15,6 +15,7 @@ type Link struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	URL           string `json:"url"`
+	password      string
 	clientAddress string
 	CreatedAt     string `json:"createdAt"`
 }
