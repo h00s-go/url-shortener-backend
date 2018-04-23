@@ -17,11 +17,6 @@ type errorResponse struct {
 	Description string `json:"description"`
 }
 
-// InsertLinkData represents data which is sent when posting new url
-type InsertLinkData struct {
-	URL string `json:"url" binding:"required"`
-}
-
 // NewController creates new link controller
 func NewController(db *db.Database, logger *logger.Logger) *Controller {
 	return &Controller{db: db, logger: logger}
@@ -79,9 +74,9 @@ func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
 // InsertLink adds new link
 func (lc *Controller) InsertLink(c *gin.Context) {
 	if !lc.isSpammer(c.ClientIP()) {
-		var linkData InsertLinkData
-		if err := c.BindJSON(&linkData); err == nil {
-			l, err := insertLink(lc.db, linkData.URL, c.ClientIP())
+		var link Link
+		if err := c.BindJSON(&link); err == nil {
+			l, err := insertLink(lc.db, link.URL, c.ClientIP())
 			if err == nil {
 				c.JSON(201, l)
 			} else {

@@ -14,7 +14,7 @@ import (
 type Link struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
-	URL           string `json:"url"`
+	URL           string `json:"url" binding:"required"`
 	password      string
 	clientAddress string
 	CreatedAt     string `json:"createdAt"`
