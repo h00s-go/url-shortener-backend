@@ -76,7 +76,7 @@ func (lc *Controller) InsertLink(c *gin.Context) {
 	if !lc.isSpammer(c.ClientIP()) {
 		var link Link
 		if err := c.BindJSON(&link); err == nil {
-			l, err := insertLink(lc.db, link.URL, c.ClientIP())
+			l, err := insertLink(lc.db, link.URL, "", c.ClientIP())
 			if err == nil {
 				c.JSON(201, l)
 			} else {

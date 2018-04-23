@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/host"
 )
@@ -46,7 +48,7 @@ func getLink(db *db.Database, query string, param string) (*Link, error) {
 }
 
 // InsertLink in db. If inserted, return Link struct
-func insertLink(db *db.Database, url string, clientAddress string) (*Link, error) {
+func insertLink(db *db.Database, url string, password string, clientAddress string) (*Link, error) {
 	url = strings.TrimSpace(url)
 
 	err := host.IsValid(url)
@@ -67,12 +69,21 @@ func insertLink(db *db.Database, url string, clientAddress string) (*Link, error
 	l = &Link{}
 	id := 0
 
+	password = strings.TrimSpace(password)
+	hashedPassword := []byte("")
+	if password != "" {
+		hashedPassword, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, errors.New("Error while creating password hash: " + err.Error())
+		}
+	}
+
 	tx, err := db.Conn.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	err = tx.QueryRow(sqlInsertLink, nil, url, "", clientAddress, "NOW()").Scan(&id)
+	err = tx.QueryRow(sqlInsertLink, nil, url, hashedPassword, clientAddress, "NOW()").Scan(&id)
 	if err != nil {
 		tx.Rollback()
 		return nil, errors.New("Error while inserting link: " + err.Error())
