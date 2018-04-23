@@ -35,7 +35,7 @@ func getLinkByURL(db *db.Database, url string) (*Link, error) {
 func getLink(db *db.Database, query string, param string) (*Link, error) {
 	l := &Link{}
 
-	err := db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.clientAddress, &l.CreatedAt)
+	err := db.Conn.QueryRow(query, param).Scan(&l.ID, &l.Name, &l.URL, &l.password, &l.clientAddress, &l.CreatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil, nil
@@ -72,7 +72,7 @@ func insertLink(db *db.Database, url string, clientAddress string) (*Link, error
 		return nil, err
 	}
 
-	err = tx.QueryRow(sqlInsertLink, nil, url, clientAddress, "NOW()").Scan(&id)
+	err = tx.QueryRow(sqlInsertLink, nil, url, "", clientAddress, "NOW()").Scan(&id)
 	if err != nil {
 		tx.Rollback()
 		return nil, errors.New("Error while inserting link: " + err.Error())
