@@ -1,9 +1,9 @@
 package link
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/logger"
+	"github.com/labstack/echo"
 )
 
 // Controller for Link methods
@@ -23,71 +23,71 @@ func NewController(db *db.Database, logger *logger.Logger) *Controller {
 }
 
 // GetLink get link with specific name
-func (lc *Controller) GetLink(c *gin.Context) {
-	lc.getLink(c, false)
+func (lc *Controller) GetLink(c echo.Context) error {
+	return lc.getLink(c, false)
 }
 
 // RedirectToLink get link with specifig name and redirects to it's url
-func (lc *Controller) RedirectToLink(c *gin.Context) {
-	lc.getLink(c, true)
+func (lc *Controller) RedirectToLink(c echo.Context) error {
+	return lc.getLink(c, true)
 }
 
-func (lc *Controller) getLink(c *gin.Context, redirect bool) {
+func (lc *Controller) getLink(c echo.Context, redirect bool) error {
 	name := c.Param("name")
 	l, err := getLinkByName(lc.db, name)
 
 	switch {
 	case l != nil:
-		if err := insertActivity(lc.db, l.ID, c.ClientIP()); err != nil {
+		if err := insertActivity(lc.db, l.ID, c.RealIP()); err != nil {
 			lc.logger.Error(err.Error())
 		}
 		if redirect {
-			c.Redirect(302, l.URL)
+			return c.Redirect(302, l.URL)
 		} else {
-			c.JSON(200, l)
+			return c.JSON(200, l)
 		}
 	case err != nil:
 		lc.logger.Error(err.Error())
-		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
+		return c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
-		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
+		return c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 
 // GetLinkActivityStats get link with specific name
-func (lc *Controller) GetLinkActivityStats(c *gin.Context) {
+func (lc *Controller) GetLinkActivityStats(c echo.Context) error {
 	name := c.Param("name")
 	id := getIDFromName(name)
 	s, err := getLinkActivityStats(lc.db, id)
 
 	switch {
 	case s != nil:
-		c.JSON(200, s)
+		return c.JSON(200, s)
 	case err != nil:
 		lc.logger.Error(err.Error())
-		c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
+		return c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
 	default:
-		c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
+		return c.JSON(404, errorResponse{"Link not found", "Link with specified name not found"})
 	}
 }
 
 // InsertLink adds new link
-func (lc *Controller) InsertLink(c *gin.Context) {
-	if !lc.isSpammer(c.ClientIP()) {
+func (lc *Controller) InsertLink(c echo.Context) error {
+	if !lc.isSpammer(c.RealIP()) {
 		var link Link
-		if err := c.BindJSON(&link); err == nil {
-			l, err := insertLink(lc.db, link.URL, "", c.ClientIP())
+		if err := c.Bind(&link); err == nil {
+			l, err := insertLink(lc.db, link.URL, "", c.RealIP())
 			if err == nil {
-				c.JSON(201, l)
+				return c.JSON(201, l)
 			} else {
 				lc.logger.Error(err.Error())
-				c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
+				return c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
 			}
 		} else {
-			c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
+			return c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
 		}
 	} else {
-		c.JSON(429, errorResponse{"Rate limiting", "Too many links posted, please wait couple of minutes"})
+		return c.JSON(429, errorResponse{"Rate limiting", "Too many links posted, please wait couple of minutes"})
 	}
 }
 

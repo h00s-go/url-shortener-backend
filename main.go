@@ -3,11 +3,12 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"github.com/h00s/url-shortener-backend/config"
 	"github.com/h00s/url-shortener-backend/db"
 	"github.com/h00s/url-shortener-backend/link"
 	"github.com/h00s/url-shortener-backend/logger"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -34,10 +35,10 @@ func main() {
 
 	lc := link.NewController(db, l)
 
-	if c.Router.Release {
-		gin.SetMode(gin.ReleaseMode)
-	}
-	r := gin.Default()
+	r := echo.New()
+	r.Use(middleware.Logger())
+	r.Use(middleware.Recover())
+
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/links/:name", lc.GetLink)
@@ -47,5 +48,5 @@ func main() {
 	}
 
 	l.Info("Starting HTTP server...")
-	r.Run(c.Server.Address)
+	r.Logger.Fatal(r.Start(c.Server.Address))
 }
