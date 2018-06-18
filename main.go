@@ -36,6 +36,7 @@ func main() {
 	lc := link.NewController(db, l)
 
 	r := echo.New()
+	r.Use(middleware.CORS())
 	r.Use(middleware.Logger())
 	r.Use(middleware.Recover())
 
