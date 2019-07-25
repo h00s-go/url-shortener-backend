@@ -1,0 +1,15 @@
+[database]
+host = "127.0.0.1"
+port = "5432"
+user = "user"
+password = "secret"
+name = "url_shortener"
+
+[server]
+address = "127.0.0.1:8000"
+
+[log]
+filename = "url-shortener-backend.log"
+
+[router]
+release = false

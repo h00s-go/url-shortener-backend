@@ -1,49 +1,48 @@
 package config
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"github.com/BurntSushi/toml"
 )
 
 // Configuration struct have all fields from configuration JSON file
 type Configuration struct {
-	Database Database `json:"database"`
-	Server   Server   `json:"server"`
-	Log      Log      `json:"log"`
-	Router   Router   `json:"router"`
+	Database Database
+	Server   Server
+	Log      Log
+	Router   Router
 }
 
 // Database defines DB configuration
 type Database struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	Host     string
+	Port     string
+	User     string
+	Password string
+	Name     string
 }
 
 // Server defines http server configuration (address and port)
 type Server struct {
-	Address string `json:"address"`
+	Address string
 }
 
 // Log defines logging configuration (log filename)
 type Log struct {
-	Filename string `json:"filename"`
+	Filename string
 }
 
 // Router defines router (Gin) configuration
 type Router struct {
-	Release bool `json:"release"`
+	Release bool
 }
 
 // Load loads configuration from path
 func Load(path string) (Configuration, error) {
 	var c Configuration
-	configJSON, err := ioutil.ReadFile(path)
-	if err != nil {
+
+	if _, err := toml.DecodeFile(path, &c); err != nil {
 		return c, err
 	}
-	err = json.Unmarshal(configJSON, &c)
-	return c, err
+
+	return c, nil
 }

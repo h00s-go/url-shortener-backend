@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	c, err := config.Load("configuration.json")
+	c, err := config.Load("configuration.toml")
 	if err != nil {
 		log.Fatal(err)
 	}

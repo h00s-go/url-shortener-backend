@@ -31,7 +31,7 @@ func TestLinkNames(t *testing.T) {
 }
 
 func TestLinkInserting(t *testing.T) {
-	config, _ := config.Load("../configuration_test.json")
+	config, _ := config.Load("../configuration_test.toml")
 	db, _ := db.Connect(config.Database)
 	_, err := insertLink(db, "http://www.google.com/test", "", "127.0.0.1")
 	if err != nil {

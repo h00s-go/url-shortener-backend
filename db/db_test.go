@@ -7,7 +7,7 @@ import (
 )
 
 func TestDB(t *testing.T) {
-	c, err := config.Load("../configuration_test.json")
+	c, err := config.Load("../configuration_test.toml")
 	if err != nil {
 		t.Error("Unable to load configuration")
 	}

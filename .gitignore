@@ -1,5 +1,5 @@
-configuration.json
-configuration_test.json
+configuration.toml
+configuration_test.toml
 url-shortener-backend
 url-shortener-backend.log
 logger/logger_test.log
