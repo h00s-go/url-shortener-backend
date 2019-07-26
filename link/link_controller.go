@@ -43,9 +43,8 @@ func (lc *Controller) getLink(c echo.Context, redirect bool) error {
 		}
 		if redirect {
 			return c.Redirect(302, l.URL)
-		} else {
-			return c.JSON(200, l)
 		}
+		return c.JSON(200, l)
 	case err != nil:
 		lc.logger.Error(err.Error())
 		return c.JSON(500, errorResponse{"Error while getting link", "There was an server error when getting link"})
@@ -79,16 +78,13 @@ func (lc *Controller) InsertLink(c echo.Context) error {
 			l, err := insertLink(lc.db, link.URL, "", c.RealIP())
 			if err == nil {
 				return c.JSON(201, l)
-			} else {
-				lc.logger.Error(err.Error())
-				return c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
 			}
-		} else {
-			return c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
+			lc.logger.Error(err.Error())
+			return c.JSON(500, errorResponse{"Error while adding link", "There was an server error when adding link"})
 		}
-	} else {
-		return c.JSON(429, errorResponse{"Rate limiting", "Too many links posted, please wait couple of minutes"})
+		return c.JSON(400, errorResponse{"Request is invalid", "Request should be a JSON object containing url"})
 	}
+	return c.JSON(429, errorResponse{"Rate limiting", "Too many links posted, please wait couple of minutes"})
 }
 
 func (lc *Controller) isSpammer(clientAddress string) bool {
