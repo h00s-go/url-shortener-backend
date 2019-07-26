@@ -37,10 +37,10 @@ type Router struct {
 }
 
 // Load loads configuration from path
-func Load(path string) (Configuration, error) {
-	var c Configuration
+func Load(path string) (*Configuration, error) {
+	c := new(Configuration)
 
-	if _, err := toml.DecodeFile(path, &c); err != nil {
+	if _, err := toml.DecodeFile(path, c); err != nil {
 		return c, err
 	}
 
